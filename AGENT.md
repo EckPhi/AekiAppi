@@ -10,10 +10,12 @@ know to work effectively on **AekiAppi**.
 | Item | Value |
 |---|---|
 | Language | Dart / Flutter (≥ 3.0) |
-| Target platforms | Android (API 21+), iOS 12+ |
+| Target platforms | Android (API 21+), iOS 12+, macOS, Linux, Web*, Windows* |
 | State management | `provider` + `ChangeNotifier` |
 | BLE library | `flutter_blue_plus` |
 | Hashing | `crypto` (SHA-1 for BLE auth) |
+
+\* BLE is not available on Web or Windows. Those platforms show an `UnsupportedPlatformScreen` instead of the normal app.
 
 ---
 
@@ -44,6 +46,14 @@ Android SDK and all recommended VS Code extensions.
 | Build Android APK (debug) | `flutter build apk --debug` |
 | Build Android APK (release) | `flutter build apk --release` |
 | Build iOS (release) | `flutter build ios --release --no-codesign` |
+| Add web platform | `flutter create --platforms=web .` |
+| Build Web (release) | `flutter build web --release` |
+| Add Linux platform | `flutter create --platforms=linux .` |
+| Build Linux (release) | `flutter build linux --release` |
+| Add macOS platform | `flutter create --platforms=macos .` |
+| Build macOS (release) | `flutter build macos --release` |
+| Add Windows platform | `flutter create --platforms=windows .` |
+| Build Windows (release) | `flutter build windows --release` |
 | Run on device / emulator | `flutter run` |
 
 Run **`flutter analyze` and `flutter test` before every commit.**
@@ -54,14 +64,15 @@ Run **`flutter analyze` and `flutter test` before every commit.**
 
 ```
 lib/
-├── main.dart                  # App entry point, theme, Provider root
+├── main.dart                        # App entry point, theme, Provider root, platform check
 ├── models/
-│   └── scooter_state.dart     # Immutable value object for scooter state
+│   └── scooter_state.dart           # Immutable value object for scooter state
 ├── screens/
-│   ├── scan_screen.dart       # BLE device-discovery UI
-│   └── home_screen.dart       # Scooter control panel
+│   ├── scan_screen.dart             # BLE device-discovery UI
+│   ├── home_screen.dart             # Scooter control panel
+│   └── unsupported_platform_screen.dart  # Shown on Web / Windows (no BLE)
 └── services/
-    └── scooter_service.dart   # BLE logic: scan · auth · commands · notifications
+    └── scooter_service.dart         # BLE logic: scan · auth · commands · notifications
 
 test/
 └── scooter_service_test.dart  # Pure-Dart unit tests (no device required)
@@ -166,6 +177,27 @@ GitHub Actions runs on every push and pull request to `main`:
 
 See `.github/workflows/ci.yml`.
 
+A separate **Release** workflow (`.github/workflows/release.yml`) is triggered
+by `v*.*.*` tags and produces downloadable binaries for all supported platforms:
+
+| Platform | Artifact |
+|---|---|
+| Android | `aeki-appi-<version>-android.apk` |
+| Web | `aeki-appi-<version>-web.zip` |
+| Linux | `aeki-appi-<version>-linux.tar.gz` |
+| macOS | `aeki-appi-<version>-macos.zip` |
+| Windows | `aeki-appi-<version>-windows.zip` |
+
+To publish a release, push a semver tag:
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+The workflow calls `flutter create --platforms=<platform> .` at build time to
+generate the platform directories (they are not committed to the repository).
+
 ---
 
 ## Platform notes
@@ -182,3 +214,23 @@ See `.github/workflows/ci.yml`.
   `ios/Runner/Info.plist`).
 * Background BLE is **not** currently configured; add the `bluetooth-central`
   UIBackgroundModes key if needed.
+
+### macOS
+
+* `NSBluetoothAlwaysUsageDescription` must be present in
+  `macos/Runner/Info.plist` (added automatically by the Release CI workflow).
+* `flutter_blue_plus` macOS support is in beta; tested on arm64 and x86_64.
+
+### Linux
+
+* Requires BlueZ (`libbluetooth-dev`) at runtime.
+* Build-time dependencies: `clang`, `cmake`, `ninja-build`, `libgtk-3-dev`,
+  `pkg-config` (installed in the Release CI workflow).
+
+### Web & Windows
+
+* `flutter_blue_plus` does **not** support Web or Windows.
+* The app detects these platforms at startup via `kIsWeb` /
+  `defaultTargetPlatform` and shows `UnsupportedPlatformScreen` instead of the
+  BLE UI.
+* All Dart code compiles for these platforms; no BLE methods are invoked.
