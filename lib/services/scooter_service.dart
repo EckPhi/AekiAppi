@@ -132,7 +132,9 @@ class ScooterService extends ChangeNotifier {
 
   /// Returns a stream of discovered [BluetoothDevice]s whose advertisement
   /// name matches one of the known Äike scooter names.
-  Stream<BluetoothDevice> scanForScooters({Duration timeout = const Duration(seconds: 10)}) {
+  Stream<BluetoothDevice> scanForScooters({
+    Duration timeout = const Duration(seconds: 10),
+  }) {
     FlutterBluePlus.startScan(timeout: timeout);
     return FlutterBluePlus.scanResults
         .expand((results) => results)
@@ -234,7 +236,9 @@ class ScooterService extends ChangeNotifier {
     final notifyChar = _findCharacteristic(services, _notifyUuid);
 
     await notifyChar.setNotifyValue(true);
-    _notifySubscription = notifyChar.onValueReceived.listen(_handleNotification);
+    _notifySubscription = notifyChar.onValueReceived.listen(
+      _handleNotification,
+    );
   }
 
   Future<void> _sendCommand(Uint8List packet) async {
@@ -281,9 +285,7 @@ class ScooterService extends ChangeNotifier {
       case _regFirmwareInfo:
         if (payload.isNotEmpty) {
           _state = _state.copyWith(
-            firmwareVersion: String.fromCharCodes(
-              payload.where((b) => b != 0),
-            ),
+            firmwareVersion: String.fromCharCodes(payload.where((b) => b != 0)),
           );
         }
       default:

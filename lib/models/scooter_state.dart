@@ -59,7 +59,8 @@ class ScooterState {
   }
 
   @override
-  String toString() => 'ScooterState('
+  String toString() =>
+      'ScooterState('
       'isLocked: $isLocked, '
       'batteryLevel: $batteryLevel%, '
       'batteryVoltage: ${batteryVoltageMillivolts}mV, '

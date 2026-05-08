@@ -18,15 +18,49 @@ void main() {
     test('matches known good value from the blog-post example', () {
       // Challenge captured via Frida in the blog post.
       final challenge = Uint8List.fromList([
-        0x93, 0x2E, 0xED, 0x37, 0x8C, 0xA9, 0x33, 0xBB,
-        0xB8, 0x42, 0xFB, 0x0A, 0xB8, 0x6F, 0xF0, 0x1D,
-        0x74, 0x48, 0xAD, 0xF2,
+        0x93,
+        0x2E,
+        0xED,
+        0x37,
+        0x8C,
+        0xA9,
+        0x33,
+        0xBB,
+        0xB8,
+        0x42,
+        0xFB,
+        0x0A,
+        0xB8,
+        0x6F,
+        0xF0,
+        0x1D,
+        0x74,
+        0x48,
+        0xAD,
+        0xF2,
       ]);
       // Expected: SHA-1(challenge ‖ 20×0xFF) from the blog post.
       final expected = Uint8List.fromList([
-        0xA7, 0x6B, 0xBF, 0x7D, 0x04, 0xCA, 0x93, 0x0B,
-        0x78, 0x84, 0xF9, 0x75, 0x07, 0x07, 0x74, 0x57,
-        0x78, 0xDE, 0x4E, 0xE6,
+        0xA7,
+        0x6B,
+        0xBF,
+        0x7D,
+        0x04,
+        0xCA,
+        0x93,
+        0x0B,
+        0x78,
+        0x84,
+        0xF9,
+        0x75,
+        0x07,
+        0x07,
+        0x74,
+        0x57,
+        0x78,
+        0xDE,
+        0x4E,
+        0xE6,
       ]);
       expect(computeAuthResponse(challenge), equals(expected));
     });
@@ -44,8 +78,10 @@ void main() {
     test('produces a different result for a different key', () {
       final challenge = Uint8List(20);
       final defaultResult = computeAuthResponse(challenge);
-      final otherResult =
-          computeAuthResponse(challenge, key: List.filled(20, 0xAB));
+      final otherResult = computeAuthResponse(
+        challenge,
+        key: List.filled(20, 0xAB),
+      );
       expect(defaultResult, isNot(equals(otherResult)));
     });
   });
@@ -58,7 +94,18 @@ void main() {
       expect(
         cmd,
         equals(
-          Uint8List.fromList([0x00, 0xD4, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+          Uint8List.fromList([
+            0x00,
+            0xD4,
+            0x00,
+            0x01,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+          ]),
         ),
       );
     });
@@ -105,8 +152,18 @@ void main() {
       expect(
         cmd,
         equals(
-          Uint8List.fromList(
-              [0x00, 0xD2, 0x1B, 0x1E, 0x3C, 0x01, 0x00, 0x00, 0x01, 0x00]),
+          Uint8List.fromList([
+            0x00,
+            0xD2,
+            0x1B,
+            0x1E,
+            0x3C,
+            0x01,
+            0x00,
+            0x00,
+            0x01,
+            0x00,
+          ]),
         ),
       );
     });

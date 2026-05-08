@@ -40,7 +40,10 @@ class AekiAppi extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: _isBleSupported ? const ScanScreen() : const UnsupportedPlatformScreen(),
+        home:
+            _isBleSupported
+                ? const ScanScreen()
+                : const UnsupportedPlatformScreen(),
       ),
     );
   }

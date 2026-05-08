@@ -10,10 +10,7 @@ class UnsupportedPlatformScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AekiAppi'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('AekiAppi'), centerTitle: true),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
