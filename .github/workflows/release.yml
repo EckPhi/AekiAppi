@@ -182,6 +182,7 @@ jobs:
         run: flutter build windows --release
 
       - name: Package windows build
+        # Flutter currently only targets x64 on Windows; update path if ARM64 support is added.
         run: |
           Compress-Archive -Path build\windows\x64\runner\Release\* `
             -DestinationPath aeki-appi-${{ github.ref_name }}-windows.zip
