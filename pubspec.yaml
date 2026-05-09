@@ -8,14 +8,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_blue_plus: ^1.35.3
+  flutter_blue_plus: ^2.3.2
   provider: ^6.1.2
   crypto: ^3.0.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^6.0.0
   mocktail: ^1.0.4
 
 flutter:
