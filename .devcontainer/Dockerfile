@@ -19,19 +19,37 @@ ARG USER_GID=${USER_UID}
 # can install additional components without prompting.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends sudo \
-    && groupadd --gid "${USER_GID}" "${USERNAME}" \
-    && useradd  --uid "${USER_UID}" --gid "${USER_GID}" -m "${USERNAME}" \
+    && if ! getent group "${USER_GID}" >/dev/null; then groupadd --gid "${USER_GID}" "${USERNAME}"; fi \
+    && if ! id -u "${USERNAME}" >/dev/null 2>&1; then \
+        if getent passwd "${USER_UID}" >/dev/null; then \
+            useradd --gid "${USER_GID}" -m "${USERNAME}"; \
+        else \
+            useradd --uid "${USER_UID}" --gid "${USER_GID}" -m "${USERNAME}"; \
+        fi; \
+    fi \
     && echo "${USERNAME} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/"${USERNAME}" \
     && chmod 0440 /etc/sudoers.d/"${USERNAME}" \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Linux desktop build dependencies for Flutter desktop development.
+# These are needed for the `flutter build linux --release` target.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        clang \
+        cmake \
+        ninja-build \
+        libgtk-3-dev \
+        pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
 # Make the Flutter SDK writable by the new user (path may vary by image version).
 RUN for dir in /sdks/flutter /home/flutter /opt/flutter; do \
-        [ -d "$dir" ] && chown -R "${USERNAME}:${USERNAME}" "$dir" || true; \
+    [ -d "$dir" ] && chown -R "${USERNAME}:$(id -gn "${USERNAME}")" "$dir" || true; \
     done
 
 USER ${USERNAME}
 
-# Pre-warm the Flutter tool so the first `flutter` command inside the container
-# is fast.
-RUN flutter precache --android --universal
+# Enable Web and Linux platforms, then pre-warm the Flutter tool so the first
+# `flutter` command inside the container is fast.
+RUN flutter config --enable-web --enable-linux-desktop
+RUN flutter precache --android --universal --web --linux

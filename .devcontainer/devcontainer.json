@@ -12,10 +12,15 @@
   "workspaceFolder": "/workspace/aeki_appi",
 
   // Forward adb port so a USB-connected Android device is accessible.
-  "forwardPorts": [5037],
+  // Forward 8080 for Flutter web dev server.
+  "forwardPorts": [5037, 8080],
   "portsAttributes": {
     "5037": {
       "label": "Android Debug Bridge (adb)",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "Flutter Web Dev Server",
       "onAutoForward": "silent"
     }
   },
