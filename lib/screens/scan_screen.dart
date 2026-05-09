@@ -117,7 +117,8 @@ class _ScanScreenState extends State<ScanScreen> {
                           : 'No scooters found.\nTap Scan to search.',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   )
