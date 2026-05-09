@@ -34,10 +34,9 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          body:
-              service.isConnecting
-                  ? const Center(child: CircularProgressIndicator())
-                  : !service.isConnected
+          body: service.isConnecting
+              ? const Center(child: CircularProgressIndicator())
+              : !service.isConnected
                   ? _DisconnectedView(service: service)
                   : _ConnectedView(state: state, service: service),
         );
@@ -72,10 +71,9 @@ class _DisconnectedView extends StatelessWidget {
           ],
           const SizedBox(height: 24),
           FilledButton.icon(
-            onPressed:
-                () => Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const ScanScreen()),
-                ),
+            onPressed: () => Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const ScanScreen()),
+            ),
             icon: const Icon(Icons.search),
             label: const Text('Back to Scan'),
           ),
@@ -155,10 +153,9 @@ class _StatusCard extends StatelessWidget {
     final theme = Theme.of(context);
     final batteryText =
         state.batteryLevel != null ? '${state.batteryLevel}%' : '—';
-    final voltageText =
-        state.batteryVoltageMillivolts != null
-            ? '${(state.batteryVoltageMillivolts! / 1000).toStringAsFixed(1)} V'
-            : '—';
+    final voltageText = state.batteryVoltageMillivolts != null
+        ? '${(state.batteryVoltageMillivolts! / 1000).toStringAsFixed(1)} V'
+        : '—';
 
     return Card(
       child: Padding(
@@ -169,10 +166,9 @@ class _StatusCard extends StatelessWidget {
             _StatItem(
               icon: state.isLocked ? Icons.lock : Icons.lock_open,
               label: state.isLocked ? 'Locked' : 'Unlocked',
-              color:
-                  state.isLocked
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.error,
+              color: state.isLocked
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.error,
             ),
             _StatItem(
               icon: Icons.battery_std,
@@ -278,8 +274,8 @@ class _SectionHeader extends StatelessWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-        ),
+              color: Theme.of(context).colorScheme.primary,
+            ),
       ),
     );
   }

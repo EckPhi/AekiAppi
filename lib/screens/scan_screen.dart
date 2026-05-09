@@ -32,17 +32,16 @@ class _ScanScreenState extends State<ScanScreen> {
     });
 
     final service = context.read<ScooterService>();
-    _scanSubscription = service
-        .scanForScooters(timeout: const Duration(seconds: 10))
-        .listen(
-          (device) {
-            if (!_discovered.any((d) => d.remoteId == device.remoteId)) {
-              setState(() => _discovered.add(device));
-            }
-          },
-          onDone: () => setState(() => _isScanning = false),
-          onError: (_) => setState(() => _isScanning = false),
-        );
+    _scanSubscription =
+        service.scanForScooters(timeout: const Duration(seconds: 10)).listen(
+      (device) {
+        if (!_discovered.any((d) => d.remoteId == device.remoteId)) {
+          setState(() => _discovered.add(device));
+        }
+      },
+      onDone: () => setState(() => _isScanning = false),
+      onError: (_) => setState(() => _isScanning = false),
+    );
   }
 
   Future<void> _stopScan() async {
@@ -109,38 +108,37 @@ class _ScanScreenState extends State<ScanScreen> {
           else
             const SizedBox(height: 4),
           Expanded(
-            child:
-                _discovered.isEmpty
-                    ? Center(
-                      child: Text(
-                        _isScanning
-                            ? 'Scanning…'
-                            : 'No scooters found.\nTap Scan to search.',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.5),
-                        ),
+            child: _discovered.isEmpty
+                ? Center(
+                    child: Text(
+                      _isScanning
+                          ? 'Scanning…'
+                          : 'No scooters found.\nTap Scan to search.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.5),
                       ),
-                    )
-                    : ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: _discovered.length,
-                      separatorBuilder: (_, __) => const Divider(),
-                      itemBuilder: (context, index) {
-                        final device = _discovered[index];
-                        return ListTile(
-                          leading: const Icon(Icons.bluetooth),
-                          title: Text(
-                            device.platformName.isNotEmpty
-                                ? device.platformName
-                                : device.remoteId.toString(),
-                          ),
-                          subtitle: Text(device.remoteId.toString()),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () => _connectTo(device),
-                        );
-                      },
                     ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _discovered.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (context, index) {
+                      final device = _discovered[index];
+                      return ListTile(
+                        leading: const Icon(Icons.bluetooth),
+                        title: Text(
+                          device.platformName.isNotEmpty
+                              ? device.platformName
+                              : device.remoteId.toString(),
+                        ),
+                        subtitle: Text(device.remoteId.toString()),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _connectTo(device),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
