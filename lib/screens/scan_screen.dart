@@ -45,8 +45,9 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   Future<void> _stopScan() async {
+    final service = context.read<ScooterService>();
     await _scanSubscription?.cancel();
-    await context.read<ScooterService>().stopScan();
+    await service.stopScan();
     setState(() => _isScanning = false);
   }
 
@@ -96,7 +97,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 Text(
                   'Make sure Bluetooth is enabled and the scooter is nearby.',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -116,7 +117,7 @@ class _ScanScreenState extends State<ScanScreen> {
                           : 'No scooters found.\nTap Scan to search.',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   )

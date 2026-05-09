@@ -98,7 +98,7 @@ class _ConnectedView extends StatelessWidget {
       children: [
         _StatusCard(state: state),
         const SizedBox(height: 16),
-        _SectionHeader('Controls'),
+        const _SectionHeader('Controls'),
         _LockUnlockRow(state: state, service: service),
         const SizedBox(height: 12),
         _CommandButton(
@@ -107,7 +107,7 @@ class _ConnectedView extends StatelessWidget {
           onTap: service.openBatteryTray,
         ),
         const SizedBox(height: 16),
-        _SectionHeader('Settings'),
+        const _SectionHeader('Settings'),
         _ToggleTile(
           icon: Icons.eco,
           label: 'Eco Mode',
@@ -129,7 +129,7 @@ class _ConnectedView extends StatelessWidget {
         _AutoLockTile(state: state, service: service),
         if (state.firmwareVersion != null) ...[
           const SizedBox(height: 16),
-          _SectionHeader('Device Info'),
+          const _SectionHeader('Device Info'),
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('Firmware'),

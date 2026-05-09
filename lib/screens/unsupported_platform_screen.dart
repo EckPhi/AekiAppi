@@ -33,7 +33,7 @@ class UnsupportedPlatformScreen extends StatelessWidget {
                 'This platform does not support Bluetooth Low Energy.\n'
                 'Please use AekiAppi on Android, iOS, macOS, or Linux.',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 textAlign: TextAlign.center,
               ),

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
@@ -20,10 +19,6 @@ const _commandUuid = '0000155f-1212-efde-1523-785feabcd123';
 
 /// Notify: registry-prefixed status notifications from the scooter.
 const _notifyUuid = '0000155e-1212-efde-1523-785feabcd123';
-
-/// Write: 2-byte registry ID to trigger a manual read, then read from
-/// [_commandUuid].
-const _readTriggerUuid = '00001564-1212-efde-1523-785feabcd123';
 
 // ── Notification registry IDs ─────────────────────────────────────────────────
 
@@ -154,7 +149,7 @@ class ScooterService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await device.connect(autoConnect: false);
+      await device.connect(license: License.free, autoConnect: false);
       _device = device;
 
       _connectionSubscription = device.connectionState.listen((state) {
