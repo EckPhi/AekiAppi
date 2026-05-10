@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -19,7 +21,6 @@ val flutterVersionName: String = localProperties.getProperty("flutter.versionNam
 android {
     namespace = "com.example.aeki_appi"
     compileSdk = 36  // Use available SDK instead of flutter.compileSdkVersion
-    ndkVersion = null
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -52,7 +53,7 @@ android {
 }
 
 flutter {
-    source = file("../..")
+    source = "../.."
 }
 
 dependencies {
