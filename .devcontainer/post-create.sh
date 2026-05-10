@@ -28,7 +28,17 @@ find_android_sdk_root() {
 ANDROID_SDK_ROOT="$(find_android_sdk_root)"
 export ANDROID_SDK_ROOT
 export ANDROID_HOME="${ANDROID_SDK_ROOT}"
-export PATH="${ANDROID_SDK_ROOT}/platform-tools:${PATH}"
+export PATH="/usr/lib/android-sdk/platform-tools:${ANDROID_SDK_ROOT}/platform-tools:${PATH}"
+
+# Ubuntu package installs Chromium as chromium-browser; provide chromium alias
+# so Flutter web tooling can discover it via CHROME_EXECUTABLE defaults.
+if [[ -x /usr/bin/chromium-browser && ! -e /usr/bin/chromium ]]; then
+  if command -v sudo >/dev/null 2>&1; then
+    sudo ln -sfn /usr/bin/chromium-browser /usr/bin/chromium || true
+  else
+    ln -sfn /usr/bin/chromium-browser /usr/bin/chromium || true
+  fi
+fi
 
 # Some images install cmdline-tools under latest-2; normalize to latest
 # to prevent sdkmanager warning spam.
@@ -78,7 +88,24 @@ echo "Ensuring Android packages for compileSdk=${COMPILE_SDK}, targetSdk=${TARGE
 
 PRIMARY_BUILD_TOOLS="${COMPILE_SDK}.0.0"
 
-SYSTEM_ADB="$(command -v adb || true)"
+find_native_adb() {
+  local candidates=(
+    "/usr/lib/android-sdk/platform-tools/adb"
+    "/usr/bin/adb"
+  )
+
+  local bin
+  for bin in "${candidates[@]}"; do
+    if [[ -x "${bin}" ]] && "${bin}" version >/dev/null 2>&1; then
+      printf '%s\n' "${bin}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+SYSTEM_ADB="$(find_native_adb || true)"
 
 # sdkmanager may close stdin early after all licenses are accepted.
 # With pipefail enabled, that can surface as exit 141 from `yes`.
@@ -87,13 +114,11 @@ yes | "${SDKMANAGER}" --licenses >/dev/null
 set -o pipefail
 
 "${SDKMANAGER}" \
-  "cmdline-tools;latest" \
   "build-tools;${PRIMARY_BUILD_TOOLS}" \
   "platforms;android-${COMPILE_SDK}" \
   "platforms;android-${TARGET_SDK}" || {
     echo "Falling back to build-tools;35.0.0"
     "${SDKMANAGER}" \
-      "cmdline-tools;latest" \
       "build-tools;35.0.0" \
       "platforms;android-${COMPILE_SDK}" \
       "platforms;android-${TARGET_SDK}" || true
@@ -104,12 +129,14 @@ set -o pipefail
 # The Android SDK from upstream images may provide x86_64 adb, which does not
 # run in an arm64 container. If that happens, wire SDK adb to the native one.
 SDK_ADB="${ANDROID_SDK_ROOT}/platform-tools/adb"
-if [[ -n "${SYSTEM_ADB}" && -x "${SDK_ADB}" ]]; then
-  if ! "${SDK_ADB}" version >/dev/null 2>&1; then
+if [[ -n "${SYSTEM_ADB}" ]]; then
+  if [[ ! -x "${SDK_ADB}" ]] || ! "${SDK_ADB}" version >/dev/null 2>&1; then
     echo "Replacing incompatible SDK adb with native system adb at ${SYSTEM_ADB}"
     if command -v sudo >/dev/null 2>&1; then
+      sudo mkdir -p "${ANDROID_SDK_ROOT}/platform-tools"
       sudo ln -sfn "${SYSTEM_ADB}" "${SDK_ADB}"
     else
+      mkdir -p "${ANDROID_SDK_ROOT}/platform-tools"
       ln -sfn "${SYSTEM_ADB}" "${SDK_ADB}"
     fi
   fi

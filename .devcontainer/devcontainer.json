@@ -31,7 +31,8 @@
   // Keep VS Code server binaries/data on the dedicated mounted volume.
   "remoteEnv": {
     "VSCODE_AGENT_FOLDER": "/vscode/vscode-server-insiders",
-    "CHROME_EXECUTABLE": "/usr/bin/chromium"
+    "CHROME_EXECUTABLE": "/usr/bin/chromium-browser",
+    "FLUTTER_ROOT": "/opt/flutter-sdk"
   },
 
   "remoteUser": "vscode",
@@ -59,7 +60,7 @@
           "editor.tabCompletion": "onlySnippets",
           "editor.wordBasedSuggestions": "off"
         },
-        "dart.flutterSdkPath": "/sdks/flutter",
+        "dart.flutterSdkPath": "/opt/flutter-sdk",
         "dart.lineLength": 80,
         "dart.enableSdkFormatter": true,
         "dart.debugExternalPackageLibraries": false,

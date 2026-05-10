@@ -147,11 +147,21 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Ensure Android SDK is writable
-        run: sudo chown -R "$(whoami)":"$(whoami)" /opt/android-sdk-linux
+      - name: Detect Android SDK root
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "$SDK_ROOT/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
 
       - name: Install Android NDK
-        run: yes | sdkmanager --install "ndk;25.1.8937393"
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --install "ndk;26.1.10909125"
 
       - name: Install dependencies
         run: flutter pub get
