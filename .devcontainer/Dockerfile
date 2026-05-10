@@ -31,15 +31,20 @@ RUN apt-get update \
     && chmod 0440 /etc/sudoers.d/"${USERNAME}" \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Linux desktop build dependencies for Flutter desktop development.
-# These are needed for the `flutter build linux --release` target.
+# Install Linux desktop build dependencies, zsh shell tooling, and utilities.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        adb \
+        openjdk-17-jdk \
+        chromium \
         clang \
         cmake \
         ninja-build \
         libgtk-3-dev \
         pkg-config \
+        zsh \
+        neofetch \
+        fonts-powerline \
     && rm -rf /var/lib/apt/lists/*
 
 # Make the Flutter SDK writable by the new user (path may vary by image version).
@@ -49,7 +54,28 @@ RUN for dir in /sdks/flutter /home/flutter /opt/flutter; do \
 
 USER ${USERNAME}
 
-# Enable Web and Linux platforms, then pre-warm the Flutter tool so the first
-# `flutter` command inside the container is fast.
+# Install Oh My Zsh with Powerlevel10k theme and popular plugins.
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
+    && git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+           "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k" \
+    && git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions \
+           "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions" \
+    && git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting \
+           "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" \
+    && git clone --depth=1 https://github.com/zsh-users/zsh-completions \
+           "${HOME}/.oh-my-zsh/custom/plugins/zsh-completions" \
+    && git clone --depth=1 https://github.com/Aloxaf/fzf-tab \
+           "${HOME}/.oh-my-zsh/custom/plugins/fzf-tab"
+
+# Configure .zshrc: set theme, plugins, and show neofetch on login.
+RUN sed -i \
+        -e 's|^ZSH_THEME=.*|ZSH_THEME="powerlevel10k/powerlevel10k"|' \
+        -e 's|^plugins=.*|plugins=(sudo git docker flutter zsh-autosuggestions zsh-syntax-highlighting zsh-completions)|' \
+        "${HOME}/.zshrc" \
+    && printf '\n# Show system info on new shell\nneofetch\n' >> "${HOME}/.zshrc" \
+    && sudo chsh -s /usr/bin/zsh "${USERNAME}"
+
+# Enable Web and Linux platforms, then pre-warm the Flutter tool. Avoid
+# `--universal` to prevent downloading artifacts for extra architectures.
 RUN flutter config --enable-web --enable-linux-desktop
-RUN flutter precache --android --universal --web --linux
+RUN flutter precache --android --web --linux
