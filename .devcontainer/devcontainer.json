@@ -25,8 +25,14 @@
     }
   },
 
-  // Run `flutter pub get` as soon as the container is ready.
-  "postCreateCommand": "flutter pub get",
+  // Prepare Android SDK components/licenses and fetch Dart packages.
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  // Keep VS Code server binaries/data on the dedicated mounted volume.
+  "remoteEnv": {
+    "VSCODE_AGENT_FOLDER": "/vscode/vscode-server-insiders",
+    "CHROME_EXECUTABLE": "/usr/bin/chromium"
+  },
 
   "remoteUser": "vscode",
 
