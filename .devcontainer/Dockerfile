@@ -47,8 +47,8 @@ RUN apt-get update \
         fonts-powerline \
     && rm -rf /var/lib/apt/lists/*
 
-# Make the Flutter SDK writable by the new user (path may vary by image version).
-RUN for dir in /sdks/flutter /home/flutter /opt/flutter; do \
+# Make the Flutter SDK and Android SDK writable by the new user.
+RUN for dir in /sdks/flutter /home/flutter /opt/flutter /opt/android-sdk-linux /opt/android-sdk; do \
     [ -d "$dir" ] && chown -R "${USERNAME}:$(id -gn "${USERNAME}")" "$dir" || true; \
     done
 
