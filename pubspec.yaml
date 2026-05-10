@@ -9,6 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_blue_plus: ^2.3.2
+  flutter_blue_plus_winrt: ^0.0.20
   provider: ^6.1.2
   crypto: ^3.0.6
 
