@@ -3,6 +3,21 @@ set -euo pipefail
 
 cd /workspace/aeki_appi
 
+P10K_REPO_CONFIG="/workspace/aeki_appi/.devcontainer/p10k.zsh"
+P10K_HOME_CONFIG="$HOME/.p10k.zsh"
+
+# Keep prompt config persistent across rebuilds.
+if [[ -s "${P10K_REPO_CONFIG}" ]]; then
+  cp "${P10K_REPO_CONFIG}" "${P10K_HOME_CONFIG}"
+elif [[ -s "${P10K_HOME_CONFIG}" ]]; then
+  cp "${P10K_HOME_CONFIG}" "${P10K_REPO_CONFIG}"
+fi
+
+if [[ -f "$HOME/.zshrc" ]] \
+  && ! grep -q '\[\[ ! -f ~/.p10k.zsh \]\] || source ~/.p10k.zsh' "$HOME/.zshrc"; then
+  printf '\n[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh\n' >> "$HOME/.zshrc"
+fi
+
 find_android_sdk_root() {
   local candidates=(
     "${ANDROID_SDK_ROOT:-}"

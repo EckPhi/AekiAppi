@@ -37,6 +37,7 @@ RUN apt-get update \
         ninja-build \
         libgtk-3-dev \
         pkg-config \
+        mesa-utils \
         zsh \
         neofetch \
         fonts-powerline \
@@ -84,13 +85,16 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     && git clone --depth=1 https://github.com/zsh-users/zsh-completions \
            "${HOME}/.oh-my-zsh/custom/plugins/zsh-completions" \
     && git clone --depth=1 https://github.com/Aloxaf/fzf-tab \
-           "${HOME}/.oh-my-zsh/custom/plugins/fzf-tab"
+            "${HOME}/.oh-my-zsh/custom/plugins/fzf-tab" \
+        && cp "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-rainbow.zsh" "${HOME}/.p10k.zsh"
 
 # Configure shell defaults.
 RUN sed -i \
         -e 's|^ZSH_THEME=.*|ZSH_THEME="powerlevel10k/powerlevel10k"|' \
         -e 's|^plugins=.*|plugins=(sudo git docker flutter zsh-autosuggestions zsh-syntax-highlighting zsh-completions)|' \
         "${HOME}/.zshrc" \
+    && grep -q '\[\[ ! -f ~/.p10k.zsh \]\] || source ~/.p10k.zsh' "${HOME}/.zshrc" \
+       || printf '\n[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh\n' >> "${HOME}/.zshrc" \
     && printf '\n# Show system info on new shell\nneofetch\n' >> "${HOME}/.zshrc" \
     && sudo chsh -s /usr/bin/zsh "${USERNAME}"
 
