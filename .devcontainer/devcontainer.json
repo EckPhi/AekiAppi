@@ -10,6 +10,7 @@
   // Mount the local workspace into the container.
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/aeki_appi,type=bind,consistency=cached",
   "workspaceFolder": "/workspace/aeki_appi",
+  "runArgs": ["--platform=linux/amd64"],
 
   // Forward adb port so a USB-connected Android device is accessible.
   // Forward 8080 for Flutter web dev server.

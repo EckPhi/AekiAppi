@@ -128,7 +128,19 @@ set +o pipefail
 yes | "${SDKMANAGER}" --licenses >/dev/null
 set -o pipefail
 
+# Normalize SDK layout if a previous run installed platform-tools into -2.
+if [[ -d "${ANDROID_SDK_ROOT}/platform-tools-2" ]] && [[ ! -f "${ANDROID_SDK_ROOT}/platform-tools/source.properties" ]]; then
+  if command -v sudo >/dev/null 2>&1; then
+    sudo rm -rf "${ANDROID_SDK_ROOT}/platform-tools"
+    sudo mv "${ANDROID_SDK_ROOT}/platform-tools-2" "${ANDROID_SDK_ROOT}/platform-tools"
+  else
+    rm -rf "${ANDROID_SDK_ROOT}/platform-tools"
+    mv "${ANDROID_SDK_ROOT}/platform-tools-2" "${ANDROID_SDK_ROOT}/platform-tools"
+  fi
+fi
+
 "${SDKMANAGER}" \
+  "platform-tools" \
   "build-tools;${PRIMARY_BUILD_TOOLS}" \
   "platforms;android-${COMPILE_SDK}" \
   "platforms;android-${TARGET_SDK}" || {
@@ -145,13 +157,11 @@ set -o pipefail
 # run in an arm64 container. If that happens, wire SDK adb to the native one.
 SDK_ADB="${ANDROID_SDK_ROOT}/platform-tools/adb"
 if [[ -n "${SYSTEM_ADB}" ]]; then
-  if [[ ! -x "${SDK_ADB}" ]] || ! "${SDK_ADB}" version >/dev/null 2>&1; then
+  if [[ -d "${ANDROID_SDK_ROOT}/platform-tools" ]] && ([[ ! -x "${SDK_ADB}" ]] || ! "${SDK_ADB}" version >/dev/null 2>&1); then
     echo "Replacing incompatible SDK adb with native system adb at ${SYSTEM_ADB}"
     if command -v sudo >/dev/null 2>&1; then
-      sudo mkdir -p "${ANDROID_SDK_ROOT}/platform-tools"
       sudo ln -sfn "${SYSTEM_ADB}" "${SDK_ADB}"
     else
-      mkdir -p "${ANDROID_SDK_ROOT}/platform-tools"
       ln -sfn "${SYSTEM_ADB}" "${SDK_ADB}"
     fi
   fi

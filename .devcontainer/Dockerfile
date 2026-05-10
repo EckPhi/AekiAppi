@@ -3,7 +3,7 @@
 # Cirrus Labs Flutter images are being sunset, so this image is fully
 # self-contained: Ubuntu base + Flutter SDK + Android cmdline-tools.
 
-FROM ubuntu:24.04
+FROM --platform=linux/amd64 ubuntu:24.04
 
 ARG USERNAME=vscode
 ARG USER_UID=1000
