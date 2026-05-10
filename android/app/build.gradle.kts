@@ -38,7 +38,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.aeki_appi"
-        minSdk = 21  // Flutter minimum SDK
+        minSdk = flutter.minSdkVersion  // Flutter minimum SDK
         targetSdk = 36  // Match available SDK
         versionCode = flutterVersionCode.toInt()
         versionName = flutterVersionName
